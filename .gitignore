@@ -1,0 +1,18 @@
+﻿# Sensitive files
+softgrowtech/backend/src/main/resources/application.properties
+softgrowtech/frontend/js/ai-features.js
+
+# Build files
+softgrowtech/backend/target/
+softgrowtech/backend/.mvn/
+
+# IDE files
+.vscode/
+.idea/
+*.class
+
+# Uploads
+softgrowtech/backend/uploads/
+
+# Logs
+*.log
