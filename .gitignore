@@ -16,3 +16,4 @@ softgrowtech/backend/uploads/
 
 # Logs
 *.log
+.env
