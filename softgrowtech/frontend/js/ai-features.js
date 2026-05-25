@@ -1,5 +1,5 @@
 // ===== AI FEATURES — Using Groq API =====
-const GROQ_API = 'https://api.groq.com/openai/v1/chat/completions';
+const GROQ_API = 'Your api key here';
 const GROQ_KEY ='REDACTED'
 ; // <-- Yahan apni Groq key daalo
 
