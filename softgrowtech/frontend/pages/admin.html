@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel — SoftGrowTech</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/main.css"/>
+  <link rel="stylesheet" href="../css/dashboard.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="noise-overlay"></div>
+  <div class="toast-container" id="toastContainer"></div>
+  <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">🌙</button>
+
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <span class="logo-icon">⬡</span> SoftGrow<span class="accent">Tech</span>
+        <div style="font-size:0.6rem;color:var(--cyan);letter-spacing:0.15em;margin-top:0.2rem">ADMIN PANEL</div>
+      </div>
+      <div class="sidebar-user">
+        <div class="avatar" style="background:linear-gradient(135deg,#ff6b6b,#c62828)">A</div>
+        <div class="user-info">
+          <div class="user-name" id="adminName">Admin</div>
+          <div class="user-role" style="color:#ff6b6b">Administrator</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Dashboard</div>
+        <a class="nav-item active" onclick="showPage('overview')"><span class="nav-icon">📊</span> Analytics</a>
+        <div class="nav-section-label">Management</div>
+        <a class="nav-item" onclick="showPage('submissions')"><span class="nav-icon">📋</span> All Submissions <span class="nav-badge" id="newSubBadge">0</span></a>
+        <a class="nav-item" onclick="showPage('interns')"><span class="nav-icon">👥</span> Manage Interns</a>
+        <div class="nav-section-label">Tools</div>
+        <a class="nav-item" onclick="showPage('reports')"><span class="nav-icon">📥</span> Reports & Export</a>
+        <a class="nav-item" onclick="showPage('settings')"><span class="nav-icon">⚙️</span> Settings</a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+
+      <!-- ===== ANALYTICS ===== -->
+      <div id="page-overview" class="page">
+        <div class="page-header">
+          <div><h1>Admin <span class="accent">Analytics</span></h1><p>Platform overview and submission statistics</p></div>
+          <button class="btn-primary" onclick="refreshData()">↻ Refresh</button>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card"><span class="sc-icon">👥</span><div class="sc-num" id="totalInterns">0</div><div class="sc-label">Total Interns</div></div>
+          <div class="stat-card"><span class="sc-icon">📤</span><div class="sc-num" id="totalSubs">0</div><div class="sc-label">Total Submissions</div></div>
+          <div class="stat-card"><span class="sc-icon">⏳</span><div class="sc-num" id="pendingSubs">0</div><div class="sc-label">Pending Review</div></div>
+          <div class="stat-card"><span class="sc-icon">✅</span><div class="sc-num" id="approvedSubs">0</div><div class="sc-label">Approved</div></div>
+        </div>
+        <div class="two-col">
+          <div class="content-section">
+            <h2><span class="section-icon">📊</span> Submissions by Domain</h2>
+            <div class="chart-container"><canvas id="domainChart"></canvas></div>
+          </div>
+          <div class="content-section">
+            <h2><span class="section-icon">📈</span> Weekly Activity</h2>
+            <div class="chart-container"><canvas id="weeklyChart"></canvas></div>
+          </div>
+        </div>
+        <div class="content-section">
+          <h2><span class="section-icon">🕐</span> Recent Submissions (needs review)</h2>
+          <div class="data-table-wrap">
+            <table class="data-table">
+              <thead><tr><th>Intern</th><th>Task</th><th>Domain</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
+              <tbody id="recentSubsTable"><tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:2rem">Loading...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== ALL SUBMISSIONS ===== -->
+      <div id="page-submissions" class="page" style="display:none">
+        <div class="page-header">
+          <div><h1>All <span class="accent">Submissions</span></h1><p>Review and manage intern submissions</p></div>
+          <button class="btn-primary" onclick="exportSubmissions()">📥 Export CSV</button>
+        </div>
+        <div class="content-section">
+          <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem;align-items:center">
+            <select class="form-control" id="filterDomain" style="width:180px" onchange="loadAdminSubmissions()">
+              <option value="">All Domains</option>
+              <option value="Web Development">Web Dev</option>
+              <option value="Android Development">Android</option>
+              <option value="AI / ML">AI/ML</option>
+              <option value="UI/UX Design">UI/UX</option>
+            </select>
+            <select class="form-control" id="filterStatus" style="width:160px" onchange="loadAdminSubmissions()">
+              <option value="">All Status</option>
+              <option value="PENDING">Pending</option>
+              <option value="REVIEWED">Reviewed</option>
+              <option value="APPROVED">Approved</option>
+              <option value="REJECTED">Rejected</option>
+            </select>
+            <input type="text" class="form-control" id="searchQuery" style="width:220px" placeholder="Search intern or task..." oninput="loadAdminSubmissions()"/>
+          </div>
+          <div class="data-table-wrap">
+            <table class="data-table">
+              <thead><tr><th>#</th><th>Intern</th><th>Task Title</th><th>Project</th><th>Submitted</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="allSubsTable"><tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:2rem">Loading...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== MANAGE INTERNS ===== -->
+      <div id="page-interns" class="page" style="display:none">
+        <div class="page-header">
+          <div><h1>Manage <span class="accent">Interns</span></h1><p>View and manage all registered interns</p></div>
+        </div>
+        <div class="content-section">
+          <div style="display:flex;gap:1rem;margin-bottom:1.5rem">
+            <input type="text" class="form-control" id="internSearch" placeholder="Search by name or email..." oninput="loadInterns()" style="max-width:300px"/>
+            <select class="form-control" id="internDomainFilter" style="width:180px" onchange="loadInterns()">
+              <option value="">All Domains</option>
+              <option value="Web Development">Web Dev</option>
+              <option value="Android Development">Android</option>
+              <option value="AI / ML">AI/ML</option>
+              <option value="UI/UX Design">UI/UX</option>
+            </select>
+          </div>
+          <div class="data-table-wrap">
+            <table class="data-table">
+              <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Domain</th><th>College</th><th>Joined</th><th>Submissions</th><th>Actions</th></tr></thead>
+              <tbody id="internsTable"><tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:2rem">Loading...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== REPORTS ===== -->
+      <div id="page-reports" class="page" style="display:none">
+        <div class="page-header">
+          <div><h1>Reports & <span class="accent">Export</span></h1><p>Download data and generate reports</p></div>
+        </div>
+        <div class="three-col">
+          <div class="content-section" style="text-align:center">
+            <div style="font-size:3rem;margin-bottom:1rem">&#128202;</div>
+            <h3 style="font-family:var(--font-head);font-size:0.9rem;margin-bottom:0.5rem">All Submissions</h3>
+            <p style="color:var(--text-secondary);font-size:0.8rem;margin-bottom:1.5rem">Export complete submissions data as CSV</p>
+            <button class="btn-primary" onclick="exportSubmissions()">Download CSV</button>
+          </div>
+          <div class="content-section" style="text-align:center">
+            <div style="font-size:3rem;margin-bottom:1rem">&#128101;</div>
+            <h3 style="font-family:var(--font-head);font-size:0.9rem;margin-bottom:0.5rem">Intern List</h3>
+            <p style="color:var(--text-secondary);font-size:0.8rem;margin-bottom:1.5rem">Export all intern registrations as CSV</p>
+            <button class="btn-primary" onclick="exportInterns()">Download CSV</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== SETTINGS ===== -->
+      <div id="page-settings" class="page" style="display:none">
+        <div class="page-header">
+          <div><h1>Admin <span class="accent">Settings</span></h1><p>Configure portal settings</p></div>
+        </div>
+        <div class="content-section" style="max-width:600px">
+          <h2><span class="section-icon">⚙️</span> General Settings</h2>
+          <div class="form-group"><label>Portal Name</label><input type="text" class="form-control" value="SoftGrowTech Internship Portal"/></div>
+          <div class="form-group"><label>Admin Email</label><input type="email" class="form-control" value="admin@softgrowtech.com"/></div>
+          <div class="form-group"><label>Max File Upload Size (MB)</label><input type="number" class="form-control" value="10"/></div>
+          <div class="form-group"><label>Internship Duration Options</label>
+            <select class="form-control"><option>1, 2, 3, 6 Months</option></select>
+          </div>
+          <button class="btn-primary" style="padding:0.8rem 2rem" onclick="showToast('Settings saved!','success')">Save Settings</button>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Review Modal -->
+  <div class="modal-overlay hidden" id="reviewModal">
+    <div class="modal" style="max-width:550px">
+      <button class="modal-close" onclick="closeReviewModal()">✕</button>
+      <h2>Review Submission</h2>
+      <div id="reviewContent"></div>
+      <div style="margin-top:1.5rem">
+        <div class="form-group">
+          <label>Feedback / Comments</label>
+          <textarea class="form-control" id="feedbackText" rows="4" placeholder="Add review notes, suggestions, or approval message..."></textarea>
+        </div>
+        <div style="display:flex;gap:0.75rem">
+          <button class="btn-primary" onclick="updateStatus('APPROVED')">✅ Approve</button>
+          <button class="btn-outline" onclick="updateStatus('REVIEWED')">📝 Reviewed</button>
+          <button style="flex:1;padding:0.7rem;background:rgba(239,83,80,0.1);border:1px solid rgba(239,83,80,0.3);color:#ff6b6b;border-radius:6px;cursor:pointer;font-family:var(--font-body)" onclick="updateStatus('REJECTED')">✕ Reject</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/main.js"></script>
+  <script src="../js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SoftGrowTech — Internship Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/main.css"/>
+  <link rel="stylesheet" href="css/landing.css"/>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="noise-overlay"></div>
+
+  <!-- NAV -->
+  <nav class="navbar">
+    <div class="nav-logo">
+      <span class="logo-icon">⬡</span>
+      <span class="logo-text">SoftGrow<span class="accent">Tech</span></span>
+    </div>
+    <div class="nav-links">
+      <a href="#about">About</a>
+      <a href="#features">Features</a>
+      <a href="pages/login.html" class="btn-outline">Login</a>
+      <a href="pages/register.html" class="btn-primary">Register</a>
+    </div>
+    <button class="hamburger" onclick="toggleMenu()">☰</button>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">🚀 Next-Gen Internship Platform</div>
+      <h1 class="hero-title">
+        <span class="line-1">Learn.</span>
+        <span class="line-2">Build.</span>
+        <span class="line-3 accent-glow">Evolve.</span>
+      </h1>
+      <p class="hero-sub">SoftGrowTech's internship portal — where students transform into professionals. Submit projects, track progress, and get real feedback from industry experts.</p>
+      <div class="hero-cta">
+        <a href="pages/register.html" class="btn-primary btn-lg">Start Your Journey →</a>
+        <a href="pages/login.html" class="btn-ghost btn-lg">Admin Login</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><span class="stat-num">500+</span><span class="stat-label">Interns</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat"></span><span class="stat-label">Domains</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat"><span class="stat-num">95%</span><span class="stat-label">Placement</span></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="orbit-ring ring-1"></div>
+      <div class="orbit-ring ring-2"></div>
+      <div class="orbit-ring ring-3"></div>
+      <div class="core-sphere">
+        <span>SGT</span>
+      </div>
+      <div class="floating-card card-1">
+        <span class="card-icon">⚡</span>
+        <span>Task Submitted</span>
+      </div>
+      <div class="floating-card card-2">
+        <span class="card-icon">✅</span>
+        <span>Approved!</span>
+      </div>
+      <div class="floating-card card-3">
+        <span class="card-icon">📊</span>
+        <span>Progress: 87%</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="about" id="about">
+    <div class="section-label">// ABOUT THE PROGRAM</div>
+    <h2 class="section-title">Real Projects. Real Growth.</h2>
+    <p class="section-sub">We believe the best learning happens through building. Interns work on live projects across Web Dev, Android, AI/ML, and UI/UX — with structured guidance and mentorship.</p>
+    <div class="domains-grid">
+      <div class="domain-card">
+        <div class="domain-icon">🌐</div>
+        <h3>Web Development</h3>
+        <p>Full-stack projects using modern frameworks — React, Spring Boot, Node.js</p>
+      </div>
+      <div class="domain-card">
+        <div class="domain-icon">📱</div>
+        <h3>Android Dev</h3>
+        <p>Build production Android apps with Kotlin, Jetpack Compose & Firebase</p>
+      </div>
+      <div class="domain-card">
+        <div class="domain-icon">🤖</div>
+        <h3>AI / ML</h3>
+        <p>Train models, build pipelines — Python, TensorFlow, HuggingFace</p>
+      </div>
+      <div class="domain-card">
+        <div class="domain-icon">🎨</div>
+        <h3>UI/UX Design</h3>
+        <p>Design systems, prototypes — Figma, user research, interaction design</p>
+      </div>
+      <div class="domain-card">
+  <div class="domain-icon">☁️</div>
+  <h3>Cloud DevOps</h3>
+  <p>AWS, Docker, Kubernetes, CI/CD pipelines and cloud infrastructure</p>
+</div>
+
+<div class="domain-card">
+  <div class="domain-icon">🔐</div>
+  <h3>Cybersecurity</h3>
+  <p>Ethical hacking, penetration testing, network security and CTF challenges</p>
+</div>
+
+<div class="domain-card">
+  <div class="domain-icon">📊</div>
+  <h3>Data Science</h3>
+  <p>Data analysis, visualization, pandas, NumPy and business intelligence</p>
+</div>
+
+<div class="domain-card">
+  <div class="domain-icon">🎮</div>
+  <h3>Game Development</h3>
+  <p>Unity, Unreal Engine, 2D/3D game design and interactive experiences</p>
+</div>
+
+<div class="domain-card">
+  <div class="domain-icon">⛓️</div>
+  <h3>Blockchain</h3>
+  <p>Smart contracts, Solidity, Web3.js, DeFi and NFT development</p>
+</div>
+
+<div class="domain-card">
+  <div class="domain-icon">🤖</div>
+  <h3>Embedded Systems</h3>
+  <p>Arduino, Raspberry Pi, IoT devices and hardware programming</p>
+</div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features" id="features">
+    <div class="section-label">// PLATFORM FEATURES</div>
+    <h2 class="section-title">Everything You Need</h2>
+    <div class="features-grid">
+      <div class="feature-item"><span class="fi">📤</span><h4>Task Submission</h4><p>Upload projects, screenshots, and reports with auto-formatted file naming</p></div>
+      <div class="feature-item"><span class="fi">📊</span><h4>Analytics Dashboard</h4><p>Visual charts showing your progress across all tasks and domains</p></div>
+      <div class="feature-item"><span class="fi">🔔</span><h4>Real-time Notifications</h4><p>Get instant alerts when your submissions are reviewed or approved</p></div>
+      <div class="feature-item"><span class="fi">📧</span><h4>Email Notifications</h4><p>Automatic email updates on every submission status change</p></div>
+      <div class="feature-item"><span class="fi">🧾</span><h4>PDF Receipts</h4><p>Auto-generated submission receipts for every project you submit</p></div>
+      <div class="feature-item"><span class="fi">🔒</span><h4>JWT Security</h4><p>Enterprise-grade security with role-based access control</p></div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-logo">⬡ SoftGrow<span class="accent">Tech</span></div>
+    <p>Learn • Build • Evolve</p>
+    <p class="footer-copy">© 2025 SoftGrowTech. All rights reserved.</p>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

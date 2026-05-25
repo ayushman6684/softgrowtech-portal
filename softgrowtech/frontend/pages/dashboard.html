@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard — SoftGrowTech</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/main.css"/>
+  <link rel="stylesheet" href="../css/dashboard.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="noise-overlay"></div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Theme Toggle -->
+  <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">🌙</button>
+
+  <div class="app-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <span class="logo-icon">⬡</span> SoftGrow<span class="accent">Tech</span>
+      </div>
+      <div class="sidebar-user">
+        <div class="avatar" id="avatarEl">?</div>
+        <div class="user-info">
+          <div class="user-name" id="userName">Loading...</div>
+          <div class="user-role">Intern</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Main</div>
+        <a class="nav-item active" onclick="showPage('overview')">
+          <span class="nav-icon">📊</span> Overview
+        </a>
+        <a class="nav-item" onclick="showPage('submit')">
+          <span class="nav-icon">📤</span> Submit Task
+        </a>
+        <a class="nav-item" onclick="showPage('submissions')">
+          <span class="nav-icon">📋</span> My Submissions
+          <span class="nav-badge" id="pendingBadge">0</span>
+        </a>
+        <div class="nav-section-label">AI Features</div>
+        <a class="nav-item" onclick="showPage('ai-chat')"><span class="nav-icon"></span> AI Assistant</a>
+        <a class="nav-item" onclick="showPage('ai-feedback')"><span class="nav-icon"></span> AI Feedback</a>
+        <a class="nav-item" onclick="showPage('ai-analyze')"><span class="nav-icon"></span> Performance AI</a>
+        <a class="nav-item" onclick="showPage('plagiarism')"><span class="nav-icon"></span> Plagiarism Check</a>
+        <a class="nav-item" onclick="showPage('ai-report')"><span class="nav-icon"></span> AI Report</a>
+        <a class="nav-item" onclick="showPage('code-review')"><span class="nav-icon"></span> Code Reviewer</a>
+        <div class="nav-section-label">Engage</div>
+        <a class="nav-item" onclick="showPage('gamification')"><span class="nav-icon"></span> My Points</a>
+        <a class="nav-item" onclick="showPage('leaderboard')"><span class="nav-icon"></span> Leaderboard</a>
+        <a class="nav-item" onclick="showPage('announcements')"><span class="nav-icon"></span> Announcements <span class="nav-badge" id="announceBadge" style="background:#ffc107;color:#050d1a">2</span></a>
+        <div class="nav-section-label">Account</div>
+        <a class="nav-item" onclick="showPage('profile')">
+          <span class="nav-icon">👤</span> Profile
+        </a>
+        <a class="nav-item" onclick="showPage('notifications')">
+          <span class="nav-icon">🔔</span> Notifications
+          <span class="nav-badge" id="notifBadge" style="background:#ff6b6b">0</span>
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+      <!-- ===== OVERVIEW PAGE ===== -->
+      <div id="page-overview" class="page">
+        <div class="page-header">
+          <div>
+            <h1>Welcome back, <span class="accent" id="greetName">Intern</span> 👋</h1>
+            <p>Here's your internship progress at a glance</p>
+          </div>
+          <button class="btn-primary" onclick="showPage('submit')">+ Submit Task</button>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card fade-up fade-up-1">
+            <span class="sc-icon">📤</span>
+            <div class="sc-num" id="totalSubmissions">0</div>
+            <div class="sc-label">Total Submissions</div>
+            <div class="sc-change">↑ Keep it up!</div>
+          </div>
+          <div class="stat-card fade-up fade-up-2">
+            <span class="sc-icon">✅</span>
+            <div class="sc-num" id="approvedCount">0</div>
+            <div class="sc-label">Approved</div>
+          </div>
+          <div class="stat-card fade-up fade-up-3">
+            <span class="sc-icon">⏳</span>
+            <div class="sc-num" id="pendingCount">0</div>
+            <div class="sc-label">Pending Review</div>
+          </div>
+          <div class="stat-card fade-up" style="animation-delay:0.4s;opacity:0">
+            <span class="sc-icon">📈</span>
+            <div class="sc-num" id="progressPct">0%</div>
+            <div class="sc-label">Overall Progress</div>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div class="content-section">
+            <h2><span class="section-icon">📈</span> Submission Activity</h2>
+            <div class="chart-container"><canvas id="activityChart"></canvas></div>
+          </div>
+          <div class="content-section">
+            <h2><span class="section-icon">📋</span> Recent Submissions</h2>
+            <div id="recentSubmissions"><p style="color:var(--text-muted);text-align:center;padding:2rem">No submissions yet</p></div>
+          </div>
+        </div>
+
+        <div class="content-section">
+          <h2><span class="section-icon">🎯</span> Domain Progress</h2>
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem">
+            <span style="font-size:0.9rem;min-width:120px" id="domainLabel">Web Development</span>
+            <div class="progress-bar" style="flex:1"><div class="progress-fill" id="domainBar" style="width:0%"></div></div>
+            <span style="font-size:0.85rem;color:var(--cyan)" id="domainPct">0%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== SUBMIT PAGE ===== -->
+      <div id="page-submit" class="page" style="display:none">
+        <div class="page-header">
+          <div>
+            <h1>Submit <span class="accent">Task</span></h1>
+            <p>Upload your project or task for review</p>
+          </div>
+        </div>
+        <div class="content-section" style="max-width:700px">
+          <h2><span class="section-icon">📤</span> New Submission</h2>
+          <div id="submit-alert"></div>
+          <form id="submitForm" onsubmit="handleSubmit(event)">
+            <div class="form-group">
+              <label>Task Title *</label>
+              <input type="text" class="form-control" id="taskTitle" placeholder="E.g. E-Commerce Frontend - Week 2" required/>
+            </div>
+            <div class="form-group">
+              <label>Project Type *</label>
+              <select class="form-control" id="projectType" required>
+                <option value="">Select Project</option>
+                <option value="E-Commerce Website">E-Commerce Website</option>
+                <option value="Internship Management System">Internship Management System</option>
+                <option value="Android App">Android App</option>
+                <option value="AI/ML Model">AI/ML Model</option>
+                <option value="UI/UX Design">UI/UX Design</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Description *</label>
+              <textarea class="form-control" id="description" rows="4" placeholder="Describe what you've built, features added, technologies used..." required style="resize:vertical"></textarea>
+            </div>
+            <div class="form-group">
+              <label>GitHub / Live URL (optional)</label>
+              <input type="url" class="form-control" id="projectUrl" placeholder="https://github.com/you/project"/>
+            </div>
+            <div class="form-group">
+              <label>Upload File (PDF, ZIP, PNG, JPG — max 10MB)</label>
+              <div class="upload-area" id="uploadArea">
+                <input type="file" class="upload-input" id="fileInput" accept=".pdf,.zip,.png,.jpg,.jpeg" onchange="handleFileSelect(this)"/>
+                <span class="upload-icon">📁</span>
+                <div class="upload-text">Drag & drop or <span>browse files</span></div>
+                <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.5rem">File will be auto-named: YourName_Domain</div>
+              </div>
+              <div class="file-preview" id="filePreview" style="display:none">
+                <span class="file-icon">📎</span>
+                <span id="fileName">No file</span>
+                <button type="button" onclick="clearFile()" style="margin-left:auto;background:none;border:none;color:#ff6b6b;cursor:pointer">✕</button>
+              </div>
+            </div>
+            <button type="submit" class="btn-primary" id="submitBtn" style="width:100%;padding:0.9rem">Submit Task →</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ===== MY SUBMISSIONS PAGE ===== -->
+      <div id="page-submissions" class="page" style="display:none">
+        <div class="page-header">
+          <div>
+            <h1>My <span class="accent">Submissions</span></h1>
+            <p>Track status and feedback for all your submissions</p>
+          </div>
+        </div>
+        <div class="content-section">
+          <div style="display:flex;gap:0.75rem;margin-bottom:1.5rem;flex-wrap:wrap">
+            <button class="icon-btn active" onclick="filterSubs('all')">All</button>
+            <button class="icon-btn" onclick="filterSubs('PENDING')">Pending</button>
+            <button class="icon-btn" onclick="filterSubs('APPROVED')">Approved</button>
+            <button class="icon-btn" onclick="filterSubs('REVIEWED')">Reviewed</button>
+            <button class="icon-btn" onclick="filterSubs('REJECTED')">Rejected</button>
+          </div>
+          <div id="submissionsList"><div style="text-align:center;padding:3rem;color:var(--text-muted)">Loading submissions...</div></div>
+        </div>
+      </div>
+
+      <!-- ===== PROFILE PAGE ===== -->
+      <div id="page-profile" class="page" style="display:none">
+        <div class="page-header">
+          <div><h1>My <span class="accent">Profile</span></h1><p>Manage your account information</p></div>
+        </div>
+        <div class="two-col">
+          <div class="content-section">
+            <h2><span class="section-icon">👤</span> Personal Info</h2>
+            <div style="text-align:center;margin-bottom:2rem">
+              <div class="avatar" style="width:80px;height:80px;font-size:2rem;margin:0 auto 1rem" id="profileAvatar">?</div>
+              <div style="font-family:var(--font-head);font-size:1.1rem" id="profileName">—</div>
+              <div style="color:var(--cyan);font-size:0.8rem;margin-top:0.25rem" id="profileDomain">—</div>
+            </div>
+            <div class="form-group"><label>Full Name</label><input type="text" class="form-control" id="pName" readonly/></div>
+            <div class="form-group"><label>Email</label><input type="email" class="form-control" id="pEmail" readonly/></div>
+            <div class="form-group"><label>Phone</label><input type="tel" class="form-control" id="pPhone" readonly/></div>
+            <div class="form-group"><label>College</label><input type="text" class="form-control" id="pCollege" readonly/></div>
+          </div>
+          <div class="content-section">
+            <h2><span class="section-icon">🔒</span> Change Password</h2>
+            <div id="pwd-alert"></div>
+            <form onsubmit="changePassword(event)">
+              <div class="form-group"><label>Current Password</label><input type="password" class="form-control" id="currentPwd" required/></div>
+              <div class="form-group"><label>New Password</label><input type="password" class="form-control" id="newPwd" required minlength="8"/></div>
+              <div class="form-group"><label>Confirm New Password</label><input type="password" class="form-control" id="confirmPwd" required/></div>
+              <button type="submit" class="btn-primary" style="width:100%;padding:0.8rem">Update Password</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== NOTIFICATIONS PAGE ===== -->
+      <div id="page-notifications" class="page" style="display:none">
+        <div class="page-header">
+          <div><h1><span class="accent">Notifications</span></h1><p>Stay updated on your submission status</p></div>
+          <button class="icon-btn" onclick="clearAllNotifs()">Clear All</button>
+        </div>
+        <div class="content-section">
+          <div id="notifList"></div>
+        </div>
+      </div>
+
+
+      <div id="page-ai-chat" class="page" style="display:none">
+        <div class="page-header"><div><h1>SGT <span class="accent">AI Assistant</span></h1><p>Ask anything about your internship, coding, or career</p></div></div>
+        <div class="content-section" style="max-width:700px">
+          <div id="chatMessages" style="height:400px;overflow-y:auto;padding:1rem;background:rgba(0,0,0,0.2);border-radius:10px;margin-bottom:1rem">
+            <div style="display:flex;gap:0.75rem;margin-bottom:1rem">
+              <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#7c4dff,#4a148c);display:flex;align-items:center;justify-content:center;font-size:0.8rem;flex-shrink:0;color:white">AI</div>
+              <div style="max-width:75%;padding:0.75rem 1rem;border-radius:4px 12px 12px 12px;background:rgba(124,77,255,0.15);border:1px solid rgba(124,77,255,0.3);font-size:0.875rem;line-height:1.6">Hi! I am SGT AI Assistant. Ask me anything about coding, career, or your internship!</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:0.75rem">
+            <textarea id="chatInput" class="form-control" rows="2" placeholder="Ask me anything... (Press Enter to send)" onkeypress="handleChatKeyPress(event)" style="resize:none;flex:1"></textarea>
+            <button class="btn-primary" onclick="sendChatMessage()" style="padding:0.75rem 1.5rem;align-self:flex-end">Send</button>
+          </div>
+          <div style="display:flex;gap:0.5rem;margin-top:0.75rem;flex-wrap:wrap">
+            <button class="icon-btn" onclick="document.getElementById('chatInput').value='How do I improve my React skills?';sendChatMessage()">React tips</button>
+            <button class="icon-btn" onclick="document.getElementById('chatInput').value='What career path should I choose?';sendChatMessage()">Career advice</button>
+            <button class="icon-btn" onclick="document.getElementById('chatInput').value='How to write a good README?';sendChatMessage()">README help</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="page-ai-feedback" class="page" style="display:none">
+        <div class="page-header"><div><h1>AI Task <span class="accent">Feedback</span></h1><p>Get instant AI-powered feedback on your submission</p></div></div>
+        <div class="content-section" style="max-width:700px">
+          <div class="form-group"><label>Task Title</label><input type="text" class="form-control" id="aiFeedbackTitle" placeholder="E.g. E-Commerce Homepage"/></div>
+          <div class="form-group"><label>Project Type</label>
+            <select class="form-control" id="aiFeedbackType"><option>E-Commerce Website</option><option>Android App</option><option>AI/ML Model</option><option>UI/UX Design</option><option>Other</option></select>
+          </div>
+          <div class="form-group"><label>Description</label><textarea class="form-control" id="aiFeedbackDesc" rows="5" placeholder="Describe your implementation..."></textarea></div>
+          <button id="aiFeedbackBtn" class="btn-primary" style="width:100%;padding:0.9rem" onclick="getAIFeedback(document.getElementById('aiFeedbackTitle').value,document.getElementById('aiFeedbackDesc').value,document.getElementById('aiFeedbackType').value)">Get AI Feedback</button>
+          <div id="aiFeedbackResult"></div>
+        </div>
+      </div>
+
+      <div id="page-ai-analyze" class="page" style="display:none">
+        <div class="page-header"><div><h1>AI Performance <span class="accent">Analyzer</span></h1><p>AI analysis of your internship performance</p></div></div>
+        <div class="content-section" style="max-width:700px;text-align:center">
+          <p style="color:var(--text-secondary);margin-bottom:2rem">Our AI will analyze your submissions and progress to give a detailed performance review.</p>
+          <button id="analyzeBtn" class="btn-primary" style="padding:1rem 3rem" onclick="analyzePerformance()">Analyze My Performance</button>
+          <div id="analysisResult"></div>
+        </div>
+      </div>
+
+      <div id="page-plagiarism" class="page" style="display:none">
+        <div class="page-header"><div><h1>Plagiarism <span class="accent">Checker</span></h1><p>AI-powered originality check</p></div></div>
+        <div class="content-section" style="max-width:700px">
+          <div class="form-group"><label>Paste your content</label><textarea class="form-control" id="plagiarismText" rows="8" placeholder="Paste your code or description here..."></textarea></div>
+          <button id="plagiarismBtn" class="btn-primary" style="width:100%;padding:0.9rem" onclick="checkPlagiarism()">Check Plagiarism</button>
+          <div id="plagiarismResult"></div>
+        </div>
+      </div>
+
+      <div id="page-ai-report" class="page" style="display:none">
+        <div class="page-header"><div><h1>AI Performance <span class="accent">Report</span></h1><p>Auto-generate professional internship report</p></div></div>
+        <div class="content-section" style="max-width:700px;text-align:center">
+          <p style="color:var(--text-secondary);margin-bottom:2rem">Generate a professional internship performance report powered by AI.</p>
+          <button id="reportBtn" class="btn-primary" style="padding:1rem 3rem" onclick="generateAIReport()">Generate AI Report</button>
+          <div id="reportResult"></div>
+        </div>
+      </div>
+
+      <div id="page-code-review" class="page" style="display:none">
+        <div class="page-header"><div><h1>AI Code <span class="accent">Reviewer</span></h1><p>Paste your code for instant AI review</p></div></div>
+        <div class="content-section" style="max-width:800px">
+          <div class="form-group"><label>Language</label>
+            <select class="form-control" id="codeLang" style="width:180px"><option>JavaScript</option><option>Java</option><option>Python</option><option>HTML/CSS</option><option>React</option><option>SQL</option></select>
+          </div>
+          <div class="form-group"><label>Paste Your Code</label><textarea class="form-control" id="codeInput" rows="12" placeholder="Paste your code here..." style="font-family:monospace;font-size:0.875rem;resize:vertical"></textarea></div>
+          <button id="reviewBtn" class="btn-primary" style="width:100%;padding:0.9rem" onclick="reviewCode()">Review My Code</button>
+          <div id="reviewResult"></div>
+        </div>
+      </div>
+
+      <div id="page-gamification" class="page" style="display:none">
+        <div class="page-header"><div><h1>My <span class="accent">Points</span></h1><p>Track your progress and earn badges</p></div>
+        <button class="btn-primary" onclick="showPage('leaderboard')">Leaderboard</button></div>
+        <div id="gamificationPage"></div>
+      </div>
+
+      <div id="page-leaderboard" class="page" style="display:none">
+        <div class="page-header"><div><h1><span class="accent">Leaderboard</span></h1><p>Top performing interns</p></div></div>
+        <div id="leaderboardPage"></div>
+      </div>
+
+      <div id="page-announcements" class="page" style="display:none">
+        <div class="page-header"><div><h1><span class="accent">Announcements</span></h1><p>Important updates from admin</p></div>
+          <button class="icon-btn" onclick="markAnnouncementsRead()">Mark all read</button>
+        </div>
+        <div class="content-section"><div id="announcementList"></div></div>
+      </div>
+
+      <button onclick="startTour()" style="position:fixed;bottom:5rem;left:1.5rem;z-index:100;width:44px;height:44px;border-radius:50%;background:var(--bg-card);border:1px solid var(--border);color:var(--cyan);font-size:1.1rem;cursor:pointer;backdrop-filter:blur(10px)" title="Start Tour">?</button>
+      <div onclick="openPalette()" style="position:fixed;top:1rem;right:1.5rem;z-index:200;font-size:0.7rem;color:var(--text-muted);font-family:var(--font-head);cursor:pointer;background:var(--bg-card);border:1px solid var(--border);padding:0.3rem 0.7rem;border-radius:6px;backdrop-filter:blur(10px)">Ctrl+K</div>
+    </main>
+  </div>
+
+  <!-- Detail Modal -->
+  <div class="modal-overlay hidden" id="detailModal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <h2 id="modalTitle">Submission Detail</h2>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script src="../js/main.js"></script>
+  <script src="../js/dashboard.js"></script>
+  <link rel="manifest" href="../manifest.json"/>
+  <script src="../js/ai-features.js"></script>
+  <script src="../js/ai-code-reviewer.js"></script>
+  <script src="../js/gamification.js"></script>
+  <script src="../js/command-palette.js"></script>
+  <script src="../js/onboarding.js"></script>
+  <script src="../js/announcements.js"></script>
+  <script src="../js/pwa.js"></script>
+</body>
+</html>
