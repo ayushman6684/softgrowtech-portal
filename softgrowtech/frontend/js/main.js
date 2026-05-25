@@ -1,6 +1,6 @@
 // ===== MAIN.JS — Shared Utilities =====
 
-const API = 'http://localhost:8080/api';
+const API = 'https://softgrowtech-portal.onrender.com/api';
 
 // ===== AUTH HELPERS =====
 function getToken() { return localStorage.getItem('token'); }
